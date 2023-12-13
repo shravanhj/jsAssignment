@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<head>
+    <title>JavaScript Assignment</title>
+</head>
+<body>
+
+<div id="loginScreen">
+    <h2>Login</h2>
+    <form onsubmit="authenticateUser(event)">
+        <label for="loginId">Login ID:</label>
+        <input type="text" id="loginId" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" required><br>
+
+        <button type="submit">Login</button>
+    </form>
+</div>
+
+
+<div id="customerListScreen" style="display: none;">
+    <h2>Customer List</h2>
+    <button onclick="showAddCustomerScreen()">Add New Customer</button>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="customerTableBody"></tbody>
+    </table>
+    <button onclick="logout()">Logout</button>
+</div>
+
+
+<div id="addCustomerScreen" style="display: none;">
+    <h2>Add New Customer</h2>
+    <form onsubmit="addCustomer(event)">
+        <label for="newFirstName">First Name:</label>
+        <input type="text" id="newFirstName" required><br>
+
+        <label for="newLastName">Last Name:</label>
+        <input type="text" id="newLastName" required><br>
+
+        <label for="newAddress">Address:</label>
+        <input type="text" id="newAddress" required><br>
+
+        <label for="newCity">City:</label>
+        <input type="text" id="newCity" required><br>
+
+        <label for="newState">State:</label>
+        <input type="text" id="newState" required><br>
+
+        <label for="newEmail">Email:</label>
+        <input type="email" id="newEmail" required><br>
+
+        <label for="newPhone">Phone:</label>
+        <input type="text" id="newPhone" required><br>
+
+        <button type="submit">Add Customer</button>
+    </form>
+    <button onclick="showCustomerListScreen()">Back to Customer List</button>
+</div>
+
+
+<div id="editCustomerScreen" style="display: none;">
+    <h2>Edit Customer</h2>
+    <form onsubmit="updateCustomer(event)">
+        <input type="hidden" id="editCustomerId">
+        <label for="editFirstName">First Name:</label>
+        <input type="text" id="editFirstName" required><br>
+
+        <label for="editLastName">Last Name:</label>
+        <input type="text" id="editLastName" required><br>
+
+        <label for="editAddress">Address:</label>
+        <input type="text" id="editAddress" required><br>
+
+        <label for="editCity">City:</label>
+        <input type="text" id="editCity" required><br>
+
+        <label for="editState">State:</label>
+        <input type="text" id="editState" required><br>
+
+        <label for="editEmail">Email:</label>
+        <input type="email" id="editEmail" required><br>
+
+        <label for="editPhone">Phone:</label>
+        <input type="text" id="editPhone" required><br>
+
+        <button type="submit">Save Changes</button>
+    </form>
+    <button onclick="cancelEdit()">Cancel Edit</button>
+</div>
+
+<script>
+    let authToken;
+    const customerList = [
+        { 
+            firstName: "John",
+            lastName: "Doe",
+            address: "123 Main St",
+            city: "Cityville",
+            state: "CA",
+            email: "john@example.com",
+            phone: "1234567890"
+        },
+
+    ];
+
+    function authenticateUser(event) 
+    {
+        event.preventDefault();
+        const loginId = document.getElementById('loginId').value;
+        const password = document.getElementById('password').value;
+
+        authToken = "BearerToken";
+
+        showCustomerListScreen();
+    }
+
+    function showCustomerListScreen() 
+    {
+        displayCustomerList();
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('customerListScreen').style.display = 'block';
+        document.getElementById('addCustomerScreen').style.display = 'none';
+        document.getElementById('editCustomerScreen').style.display = 'none';
+    }
+
+    function showAddCustomerScreen() 
+    {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('customerListScreen').style.display = 'none';
+        document.getElementById('addCustomerScreen').style.display = 'block';
+        document.getElementById('editCustomerScreen').style.display = 'none';
+    }
+
+    function showEditCustomerScreen() 
+    {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('customerListScreen').style.display = 'none';
+        document.getElementById('addCustomerScreen').style.display = 'none';
+        document.getElementById('editCustomerScreen').style.display = 'block';
+    }
+
+    function addCustomer(event) 
+    {
+        event.preventDefault();
+        const newFirstName = document.getElementById('newFirstName').value;
+        const newLastName = document.getElementById('newLastName').value;
+        const newAddress = document.getElementById('newAddress').value;
+        const newCity = document.getElementById('newCity').value;
+        const newState = document.getElementById('newState').value;
+        const newEmail = document.getElementById('newEmail').value;
+        const newPhone = document.getElementById('newPhone').value;
+
+        customerList.push({
+            firstName: newFirstName,
+            lastName: newLastName,
+            address: newAddress,
+            city: newCity,
+            state: newState,
+            email: newEmail,
+            phone: newPhone
+        });
+
+        alert('Customer added successfully.');
+        showCustomerListScreen();
+    }
+
+    function editCustomer(email) 
+    {
+        const customer = customerList.find(c => c.email === email);
+        if (customer) {
+            document.getElementById('editCustomerId').value = customer.email;
+            document.getElementById('editFirstName').value = customer.firstName;
+            document.getElementById('editLastName').value = customer.lastName;
+            document.getElementById('editAddress').value = customer.address;
+            document.getElementById('editCity').value = customer.city;
+            document.getElementById('editState').value = customer.state;
+            document.getElementById('editEmail').value = customer.email;
+            document.getElementById('editPhone').value = customer.phone;
+
+            showEditCustomerScreen();
+        } else {
+            alert('Error: Customer not found.');
+        }
+    }
+
+    function updateCustomer(event) 
+    {
+        event.preventDefault();
+        const editCustomerId = document.getElementById('editCustomerId').value;
+        const editFirstName = document.getElementById('editFirstName').value;
+        const editLastName = document.getElementById('editLastName').value;
+        const editAddress = document.getElementById('editAddress').value;
+        const editCity = document.getElementById('editCity').value;
+        const editState = document.getElementById('editState').value;
+        const editEmail = document.getElementById('editEmail').value;
+        const editPhone = document.getElementById('editPhone').value;
+
+        const index = customerList.findIndex(customer => customer.email === editCustomerId);
+        if (index !== -1) 
+        {
+            customerList[index] = {
+                firstName: editFirstName,
+                lastName: editLastName,
+                address: editAddress,
+                city: editCity,
+                state: editState,
+                email: editEmail,
+                phone: editPhone
+            };
+            alert('Customer updated successfully.');
+            displayCustomerList();
+            showCustomerListScreen();
+        } else {
+            alert('Error updating customer. Customer not found.');
+        }
+    }
+
+    function cancelEdit() 
+    {
+        showCustomerListScreen();
+    }
+
+    function logout() 
+    {
+        authToken = undefined;
+        document.getElementById('loginScreen').style.display = 'block';
+        document.getElementById('customerListScreen').style.display = 'none';
+        document.getElementById('addCustomerScreen').style.display = 'none';
+        document.getElementById('editCustomerScreen').style.display = 'none';
+    }
+
+    function displayCustomerList() 
+    {
+        const tableBody = document.getElementById('customerTableBody');
+        tableBody.innerHTML = '';
+        customerList.forEach(customer => {
+            const row = tableBody.insertRow();
+            row.insertCell(0).innerText = customer.firstName;
+            row.insertCell(1).innerText = customer.lastName;
+            row.insertCell(2).innerText = customer.address;
+            row.insertCell(3).innerText = customer.city;
+            row.insertCell(4).innerText = customer.state;
+            row.insertCell(5).innerText = customer.email;
+            row.insertCell(6).innerText = customer.phone;
+            const actionCell = row.insertCell(7);
+
+            const editButton = document.createElement('button');
+            editButton.innerText = 'Edit';
+            editButton.onclick = function() {
+                editCustomer(customer.email);
+            };
+            actionCell.appendChild(editButton);
+            const deleteButton = document.createElement('button');
+            deleteButton.innerText = 'Delete';
+            deleteButton.onclick = function() {
+                deleteCustomer(customer.email);
+            };
+            actionCell.appendChild(deleteButton);
+        });
+    }
+
+    function deleteCustomer(email) 
+    {
+        const index = customerList.findIndex(customer => customer.email === email);
+        if (index !== -1) 
+        {
+            customerList.splice(index, 1);
+            alert('Customer deleted successfully.');
+            displayCustomerList();
+        } 
+        else {
+            alert('Error deleting customer. Customer not found.');
+        }
+    }
+</script>
+
+</body>
+</html>
